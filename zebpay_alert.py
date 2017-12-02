@@ -32,7 +32,7 @@ def sendmessage(message):
     Send Message
     :param message: alert message
     """
-    if message != "":
+    if message:
         print(message)
         # make a sms api call or rest call to alert
 
