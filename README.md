@@ -1,3 +1,3 @@
-# zebpay bitcoinalert
-Alert on bitcoin price raise or fall
+# Zebpay Bitcoin Alert
+Alert on bitcoin price
 Put this script in cron job and earn some coins for you :)
