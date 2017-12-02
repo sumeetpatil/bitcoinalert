@@ -1,42 +1,65 @@
-import requests
+#!/bin/python
+# -*- coding: utf-8 -*-
+"""
+Alert on bitcoin price Put this script in cron job
+and earn some coins for you :)
+"""
+import os
 import json
-import os.path
+import requests
 
-pricediff = 20000
-tmpfile = "tmpbuy"
+PRICEDIFF = 20000
+TMPFILE = "tmpbuy"
 
-def writeData(data):
-        file = open(tmpfile,"w+")
-        file.write(str(data))
-        file.close()
 
-def readData():
-        if not os.path.isfile(tmpfile):
-                writeData("0")
-        file = open(tmpfile, "r")
-        return file.read()
+def write_data(data):
+    """Write data to a file """
+    _file = open(TMPFILE, "w+")
+    _file.write(str(data))
+    _file.close()
+
+
+def read_data():
+    """Read data from file"""
+    if not os.path.isfile(TMPFILE):
+        write_data("0")
+    _file = open(TMPFILE, "r")
+    return _file.read()
+
 
 def sendmessage(message):
-        if message != "":
-                print(message)
-                #make a sms api call or rest call to alert
-                
-
-request = requests.get("https://www.zebapi.com/api/v1/market/ticker/btc/inr")
-data = json.loads(request.content.decode('utf-8'))
-newprice = data["buy"]
-oldprice = readData()
-oldprice = float(oldprice)
-message = ""
-if oldprice - newprice > pricediff:
-        message = "London bridge is falling down! :D. Current price is " + str(newprice) + "INR and Old Price is " + str(oldprice) + "INR. "+str(pricediff)+"INR Diff Set";
-        oldprice = newprice
+    """
+    Send Message
+    :param message: alert message
+    """
+    if message:
         print(message)
+        # make a sms api call or rest call to alert
 
-if newprice - oldprice > pricediff:
-        message = "Boom Boom!!. Current price is " + str(newprice) + "INR and Old Price is " + str(oldprice) + "INR. "+str(pricediff)+"INR Diff Set";
+
+def bitcoin_alert():
+    """Bitcoin alert"""
+    request = requests.get(
+        "https://www.zebapi.com/api/v1/market/ticker/btc/inr"
+    )
+    data = json.loads(request.content.decode('utf-8'))
+    newprice = data["buy"]
+    oldprice = read_data()
+    oldprice = float(oldprice)
+    message = ""
+    if oldprice - newprice > PRICEDIFF:
+        message = "London bridge is falling down! :D. Current price is  {0}INR\
+                and Old Price is {1}INR. {2}INR Diff Set\
+                ".format(newprice, oldprice, PRICEDIFF)
         oldprice = newprice
-        print(message)
 
-writeData(newprice)
-sendmessage(message)
+    if newprice - oldprice > PRICEDIFF:
+        message = "Boom Boom!!. Current price is {0}INR and Old Price is \
+{1}INR. {2}INR Diff Set".format(newprice, oldprice, PRICEDIFF)
+        oldprice = newprice
+
+    write_data(newprice)
+    sendmessage(message)
+
+
+bitcoin_alert()
